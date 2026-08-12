@@ -29,3 +29,4 @@ pip-wheel-metadata/
 
 # Windows
 Thumbs.db
+.env
