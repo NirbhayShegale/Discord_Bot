@@ -1,5 +1,7 @@
 import os
 import threading
+import time
+from urllib.request import Request, urlopen
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 import discord
@@ -21,6 +23,26 @@ def run_health_server():
     server.serve_forever()
 
 threading.Thread(target=run_health_server, daemon=True).start()
+
+def run_keepalive():
+    keepalive_url = os.environ.get("KEEPALIVE_URL") or os.environ.get("RENDER_EXTERNAL_URL")
+    if not keepalive_url:
+        return
+
+    keepalive_url = keepalive_url.rstrip("/") + "/health"
+    interval = int(os.environ.get("KEEPALIVE_INTERVAL", "600"))
+
+    while True:
+        try:
+            request = Request(keepalive_url, method="GET")
+            with urlopen(request, timeout=10) as response:
+                response.read()
+            print(f"Keepalive ping sent to {keepalive_url} ({response.status})")
+        except Exception as error:
+            print(f"Keepalive ping failed: {error}")
+        time.sleep(interval)
+
+threading.Thread(target=run_keepalive, daemon=True).start()
 
 class MyClient(discord.Client):
     async def on_ready(self):

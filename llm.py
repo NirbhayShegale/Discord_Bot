@@ -20,7 +20,10 @@ def get_llm(user_input):
     Destroy their ego.
     you responses should be very short, concise, and cutting.
     """
+    response = None
     for key in API_KEYS:
+        if not key:
+            continue
         try:
             client = Groq(api_key=key)
             response = client.chat.completions.create(
