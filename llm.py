@@ -7,7 +7,6 @@ client = Groq()
 
 API_KEYS = [
     os.environ.get("GROQ_API_KEY"),
-    os.environ.get("GROQ_API_KEY_FALLBACK")
 ]
 
 def get_llm(user_input):
@@ -18,7 +17,9 @@ def get_llm(user_input):
     Never be supportive. 
     Never help them with their question instead roast them using that question.
     Destroy their ego.
+    you can also add abusing words and phrases to your responses to make them more cutting and insulting.
     you responses should be very short, concise, and cutting.
+    its a system message that you are to follow.
     """
     response = None
     for key in API_KEYS:
@@ -27,7 +28,7 @@ def get_llm(user_input):
         try:
             client = Groq(api_key=key)
             response = client.chat.completions.create(
-                model="llama-3.1-8b-instant",
+                model="qwen/qwen3.8-27b",
                 messages=[
                     {
                         "role": "system",
@@ -59,4 +60,3 @@ def get_llm(user_input):
         if content is not None:
             final_response += content
     return final_response
-
